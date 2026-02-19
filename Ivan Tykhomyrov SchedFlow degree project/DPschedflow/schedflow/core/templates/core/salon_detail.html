@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ salon.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #0a0a0c; color: white; font-family: 'Segoe UI', sans-serif; }
+
+
+        .salon-header {
+            background: linear-gradient(135deg, #1e1e24 0%, #16161a 100%);
+            padding: 30px 20px;
+            border-bottom: 1px solid #2d2d35;
+        }
+
+        .service-item {
+            background-color: #16161a;
+            border-bottom: 1px solid #2d2d35;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-book {
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+            color: white; border: none; font-weight: bold; border-radius: 8px; padding: 5px 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="salon-header">
+        <div class="container">
+            <a href="/" class="text-secondary text-decoration-none mb-3 d-inline-block"><i class="fas fa-arrow-left"></i> Back</a>
+
+            <h1 class="fw-bold mb-2">{{ salon.name }}</h1>
+            <p class="text-info mb-1">{{ salon.get_category_display }}</p>
+            <p class="text-secondary"><i class="fas fa-map-marker-alt"></i> {{ salon.address }}</p>
+
+            <button class="btn btn-outline-secondary btn-sm mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#hoursCollapse">
+                <i class="fas fa-clock"></i> Opening Hours
+            </button>
+            <div class="collapse mt-2" id="hoursCollapse">
+                <div class="card card-body bg-dark border-secondary">
+                    {% for day in working_hours %}
+                        <div class="d-flex justify-content-between">
+                            <span>{{ day.get_day_of_week_display }}</span>
+                            {% if day.is_day_off %}
+                                <span class="text-danger">Closed</span>
+                            {% else %}
+                                <span>{{ day.start_time|time:"H:i" }} - {{ day.end_time|time:"H:i" }}</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <h4 class="mb-3">Services</h4>
+
+        <div class="list-group rounded-3 overflow-hidden">
+            {% for service in services %}
+                <div class="service-item">
+                    <div>
+                        <h5 class="mb-1">{{ service.name }}</h5>
+                        <p class="text-muted small mb-0">{{ service.duration_minutes }} min</p>
+                        <span class="text-info fw-bold">{{ service.price }} zł</span>
+                    </div>
+                    <button class="btn btn-book">Book</button>
+                </div>
+            {% empty %}
+                <p class="text-muted p-3">No services added yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

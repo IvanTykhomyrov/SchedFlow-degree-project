@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchedFlow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* collor theme */
+        body {
+            background-color: #0a0a0c;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* searc */
+        .search-container {
+            padding: 25px 20px;
+            background: linear-gradient(135deg, #4c1d95 0%, #2563eb 100%);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .form-control-lg {
+            border-radius: 50px; border: none;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* incons from font awsome */
+        .category-icon {
+            width: 70px; height: 70px;
+            background-color: #1e1e24; border: 1px solid #333; border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px; font-size: 24px; transition: all 0.3s ease;
+            color: #a78bfa;
+        }
+
+        .category-item:hover .category-icon {
+            background-color: #6366f1; color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.6); border-color: #6366f1;
+        }
+
+        .category-item {
+            text-align: center; cursor: pointer; text-decoration: none;
+            color: #ccc; display: block; min-width: 90px;
+        }
+
+        .category-item small { font-weight: 500; font-size: 0.85rem; }
+
+        .categories-scroll {
+            display: flex; overflow-x: auto; gap: 10px; padding: 10px 0 20px 0;
+        }
+        .categories-scroll::-webkit-scrollbar { display: none; }
+
+
+        .service-card {
+            background-color: #16161a; border-radius: 16px; padding: 20px;
+            margin-bottom: 15px; border: 1px solid #2d2d35; transition: 0.2s;
+        }
+
+        .service-card:hover { border-color: #6366f1; }
+
+        .btn-visit {
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+            color: white; font-weight: bold; border: none; border-radius: 10px;
+            padding: 8px 20px; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-visit:hover {
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+            color: white; box-shadow: 0 6px 15px rgba(99, 102, 241, 0.6);
+        }
+
+        h5 { font-weight: 600; }
+        .text-muted { color: #888 !important; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark" style="background-color: #0a0a0c;">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <div style="width: 35px; height: 35px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 10px; box-shadow: 0 2px 10px rgba(99, 102, 241, 0.5);">
+                    <i class="fas fa-bolt text-white" style="font-size: 18px;"></i>
+                </div>
+                <span class="fw-bold" style="font-size: 1.3rem; background: linear-gradient(90deg, #ffffff 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    SchedFlow
+                </span>
+            </a>
+
+            <div>
+                {% if user.is_authenticated %}
+                    <span class="text-white me-2 small">Hi, {{ user.username }}!</span>
+                    <a href="{% url 'dashboard' %}" class="btn btn-sm me-2" style="background-color: #2d2d35; color: white; border: 1px solid #444;">
+                        <i class="fas fa-user-circle"></i> My Dashboard
+                    </a>
+                    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">Log out</button>
+                    </form>
+                {% else %}
+                    <a href="/accounts/login/" class="btn btn-outline-light btn-sm me-2">Log In</a>
+                    <a href="/register/" class="btn btn-primary btn-sm" style="background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%); border: none;">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="search-container sticky-top">
+        <form method="get" action="">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-0 rounded-start-5 ps-3">
+                    <i class="fas fa-search text-muted"></i>
+                </span>
+                <input type="text" name="q" class="form-control form-control-lg rounded-end-5" placeholder="Search for salons (e.g. Barber)...">
+            </div>
+        </form>
+    </div>
+
+    {% if not is_search %}
+    <div class="container mt-3">
+        <div class="categories-scroll">
+            <a href="/?category=barber" class="category-item">
+                <div class="category-icon"><i class="fas fa-cut"></i></div>
+                <small>Barbershop</small>
+            </a>
+            <a href="/?category=nails" class="category-item">
+                <div class="category-icon"><i class="fas fa-hand-sparkles"></i></div>
+                <small>Nail Salon</small>
+            </a>
+            <a href="/?category=brows" class="category-item">
+                <div class="category-icon"><i class="fas fa-eye"></i></div>
+                <small>Brows</small>
+            </a>
+            <a href="/?category=medical" class="category-item">
+                <div class="category-icon"><i class="fas fa-user-md"></i></div>
+                <small>Medicine</small>
+            </a>
+            <a href="/?category=dentist" class="category-item">
+                <div class="category-icon"><i class="fas fa-tooth"></i></div>
+                <small>Dentist</small>
+            </a>
+            <a href="/?category=psycho" class="category-item">
+                <div class="category-icon"><i class="fas fa-brain"></i></div>
+                <small>Therapy</small>
+            </a>
+            <a href="/?category=shop" class="category-item">
+                <div class="category-icon"><i class="fas fa-shopping-bag"></i></div>
+                <small>Shops</small>
+            </a>
+            <a href="/?category=auto" class="category-item">
+                <div class="category-icon"><i class="fas fa-car"></i></div>
+                <small>Auto</small>
+            </a>
+            <a href="/?category=spa" class="category-item">
+                <div class="category-icon"><i class="fas fa-spa"></i></div>
+                <small>Spa</small>
+            </a>
+            <a href="/?category=pets" class="category-item">
+                <div class="category-icon"><i class="fas fa-paw"></i></div>
+                <small>Pets</small>
+            </a>
+        </div>
+    </div>
+
+    <div class="container mt-5 text-center text-muted">
+        <p>Recommended places near you</p>
+    </div>
+    {% endif %}
+
+    {% if is_search %}
+    <div class="container mt-3">
+        <h5 class="mb-3 text-white">Found Places:</h5>
+
+        {% for salon in salons %}
+            <div class="service-card row align-items-center">
+                <div class="col-8">
+                    <h5 class="mb-1">{{ salon.name }}</h5>
+                    <p class="text-muted small mb-1">{{ salon.get_category_display }}</p>
+                    <p class="text-secondary small mb-0"><i class="fas fa-map-marker-alt"></i> {{ salon.address }}</p>
+                </div>
+                <div class="col-4 text-end">
+                    <a href="{% url 'salon_detail' salon.id %}" class="btn btn-visit btn-sm">Visit</a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="text-center mt-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <p>No places found :(</p>
+                <a href="/" class="text-info">Clear search</a>
+            </div>
+        {% endfor %}
+
+        <a href="/" class="btn btn-outline-light mt-3 w-100">Back to Home</a>
+    </div>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Day</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0a0a0c; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'Segoe UI', sans-serif; }
+        .card { background: #16161a; border: 1px solid #2d2d35; padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; }
+        input[type="time"] { background: #2c2c2c; color: white; border: 1px solid #444; width: 100%; padding: 10px; border-radius: 8px; }
+        .btn-save { background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%); border: none; width: 100%; padding: 12px; color: white; font-weight: bold; border-radius: 8px; margin-top: 20px;}
+        label { color: #ccc; margin-bottom: 8px; display: block; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h3 class="text-center mb-4">Edit {{ day.get_day_of_week_display }}</h3>
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label>Opens at:</label>
+                {{ form.start_time }}
+            </div>
+
+            <div class="mb-3">
+                <label>Closes at:</label>
+                {{ form.end_time }}
+            </div>
+
+            <div class="form-check form-switch mt-4">
+                {{ form.is_day_off }}
+                <label class="form-check-label ms-2">Set as Day Off (Closed)</label>
+            </div>
+
+            <button type="submit" class="btn btn-save">Save Changes</button>
+            <a href="{% url 'schedule' %}" class="btn btn-outline-secondary w-100 mt-2 border-0">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>
